@@ -6,7 +6,7 @@ if [ $response -eq 200 ]; then
   ROOT_URI=https://code.kubectl.net/devops/build-project/raw/branch/main
 else
   echo "Failed: HTTP status code is not 200, but $response"
-  ROOT_URI=https://gitlab.com/iprt/build-project/-/blob/main
+  ROOT_URI=https://gitlab.com/iprt/build-project/-/raw/main
 fi
 
 echo "root uri is $ROOT_URI"
