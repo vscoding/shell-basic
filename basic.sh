@@ -1,2 +1,2 @@
-ROOT_URI=https://code.kubectl.net/devops/build-project/raw/branch/main
+ROOT_URI=https://gitlab.com/iprt/shell-basic/-/raw/main
 echo "root uri is $ROOT_URI"
