@@ -13,4 +13,4 @@ else
   ROOT_URI=https://gitlab.com/iprt/build-project/-/raw/main
 fi
 
-echo -e "${GREEN}ROOT_URI is $ROOT_URI${NC}"
+echo -e "${GREEN}ROOT_URI=$ROOT_URI${NC}"
