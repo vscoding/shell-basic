@@ -1,13 +1,10 @@
 #!/bin/bash
-# shellcheck disable=SC2086 disable=SC2034  disable=SC2155
-
-# 定义颜色常量
-readonly GREEN='\033[0;32m'
-readonly RED='\033[0;31m'
-readonly NC='\033[0m' # No Color
 
 # 设置 ROOT_URI 环境变量
 function export_root_uri() {
+  local GREEN='\033[0;32m'
+  local RED='\033[0;31m'
+  local NC='\033[0m'
   local response
   local primary_url="https://code.kubectl.net"
   local fallback_url="https://gitlab.com/svcops/build-project/-/raw/main"
