@@ -1,21 +1,30 @@
 #!/bin/bash
 # shellcheck disable=SC2086 disable=SC2034  disable=SC2155
-function getRootUri() {
-  local GREEN='\033[0;32m' # 绿色
-  local RED='\033[0;31m'   # 红色
-  local NC='\033[0m'
 
-  local response=$(curl -m 3 -s -o /dev/null -w "%{http_code}" https://code.kubectl.net)
-  if [ $response -eq 200 ]; then
-    # echo -e "${GREEN}Success: HTTP status code is 200. <https://code.kubectl.net>${NC}"
-    # ROOT_URI=https://code.kubectl.net/devops/build-project/raw/branch/main
-    export ROOT_URI=https://dev.kubectl.net
+# 定义颜色常量
+readonly GREEN='\033[0;32m'
+readonly RED='\033[0;31m'
+readonly NC='\033[0m' # No Color
+
+# 设置 ROOT_URI 环境变量
+function export_root_uri() {
+  local response
+  local primary_url="https://code.kubectl.net"
+  local fallback_url="https://gitlab.com/svcops/build-project/-/raw/main"
+  local target_url="https://dev.kubectl.net"
+
+  # 检查主网站连通性
+  response=$(curl -m 3 -s -o /dev/null -w "%{http_code}" "${primary_url}" || echo "000")
+
+  if [[ $response -eq 200 ]]; then
+    export ROOT_URI="${target_url}"
+    echo -e "${GREEN}ROOT_URI=${ROOT_URI}${NC}"
   else
-    echo -e "${RED}Failed: HTTP status code is not 200, but $response.${NC}"
-    export ROOT_URI=https://gitlab.com/iprt/build-project/-/raw/main
+    echo -e "${RED}连接失败: ${primary_url} 返回状态码 ${response}${NC}"
+    export ROOT_URI="${fallback_url}"
+    echo -e "${GREEN}使用备用地址: ROOT_URI=${ROOT_URI}${NC}"
   fi
-
-  echo -e "${GREEN}ROOT_URI=$ROOT_URI${NC}"
-
 }
-getRootUri
+
+# 执行函数
+export_root_uri
