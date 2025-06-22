@@ -7,10 +7,7 @@ configuration of root uri
 
 ```shell
 # code
-ROOT_URI=https://code.kubectl.net/devops/build-project/raw/branch/main
-
-# github
-ROOT_URI=https://raw.githubusercontent.com/iprt/build-project/main
+ROOT_URI=https://dev.kubectl.net
 
 # gitlab
 ROOT_URI=https://gitlab.com/iprt/build-project/-/raw/main
