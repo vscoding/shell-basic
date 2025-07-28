@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Windows Git Bash 兼容版本
+# Windows Git Bash 兼容版本（修复变量检查）
 function export_root_uri() {
-  # 检测运行环境
+  # 检测运行环境 - 修复变量检查
   local is_git_bash=false
-  if [[ "$OSTYPE" == "msys" ]] || [[ "$MSYSTEM" != "" ]]; then
+  if [[ "$OSTYPE" == "msys" ]] || [[ "${MSYSTEM:-}" != "" ]]; then
     is_git_bash=true
   fi
 
@@ -40,21 +40,11 @@ function export_root_uri() {
   fi
 
   log_info "开始网络连通性检查..."
-  if $is_git_bash; then
-    log_info "检测到 Git Bash 环境"
-  fi
 
   # 连通性检查
   for ((attempt = 1; attempt <= MAX_RETRIES; attempt++)); do
-    # Git Bash 中 curl 的使用
     local response
-    response=$(curl -m $TIMEOUT -s -o /dev/null -w "%{http_code}" "${PRIMARY_URL}" 2>/dev/null)
-    local curl_exit_code=$?
-
-    # 处理 curl 执行失败的情况
-    if [[ $curl_exit_code -ne 0 ]]; then
-      response="000"
-    fi
+    response=$(curl -m $TIMEOUT -s -o /dev/null -w "%{http_code}" "${PRIMARY_URL}" 2>/dev/null || echo "000")
 
     if [[ $response -eq 200 ]]; then
       export ROOT_URI="${TARGET_URL}"
