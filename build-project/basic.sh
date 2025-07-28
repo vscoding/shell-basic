@@ -41,25 +41,31 @@ function export_root_uri() {
 
   log_info "开始网络连通性检查..."
 
-  # 连通性检查
+  # 连通性检查优化
+  local responses=()
   for ((attempt = 1; attempt <= MAX_RETRIES; attempt++)); do
     local response
     response=$(curl -m $TIMEOUT -s -o /dev/null -w "%{http_code}" "${PRIMARY_URL}" 2>/dev/null || echo "000")
+    responses+=("$response")
 
-    if [[ $response -eq 200 ]]; then
+    if [[ "$response" == "200" ]]; then
       export ROOT_URI="${TARGET_URL}"
       log_info "主地址连接成功，ROOT_URI=${ROOT_URI}"
       return 0
     fi
 
-    if [[ $attempt -lt $MAX_RETRIES ]]; then
+    if [[ $response -eq 000 ]]; then
+      log_warn "第 ${attempt} 次尝试失败(网络不可达)，1秒后重试..."
+    else
       log_warn "第 ${attempt} 次尝试失败(状态码: ${response})，1秒后重试..."
+    fi
+    if [[ $attempt -lt $MAX_RETRIES ]]; then
       sleep 1
     fi
   done
 
-  # 使用备用地址
-  log_error "主地址连接失败，最终状态码: ${response}"
+  # 输出所有尝试结果
+  log_error "主地址连接失败，所有尝试状态码: ${responses[*]}"
   export ROOT_URI="${FALLBACK_URL}"
   log_info "已切换到备用地址: ROOT_URI=${ROOT_URI}"
 }
