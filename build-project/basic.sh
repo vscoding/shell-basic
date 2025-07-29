@@ -1,5 +1,6 @@
 #!/bin/bash
-set -euo pipefail
+
+#set -euo pipefail
 
 function EXPORT_ROOT_URI() {
   local -r PRIMARY_TEST_URL="https://code.kubectl.net"
