@@ -3,10 +3,6 @@
 #set -euo pipefail
 
 function EXPORT_ROOT_URI() {
-  local -r PRIMARY_TEST_URL="https://code.kubectl.net"
-  local -r PRIMARY_ROOT_URI="https://dev.kubectl.net"
-  local -r GITLAB_ROOT_URI="https://gitlab.com/svcops/build-project/-/raw/main"
-
   # Initialize colors (Git Bash compatible)
   local -r GREEN='\033[0;32m'
   local -r RED='\033[0;31m'
@@ -16,6 +12,22 @@ function EXPORT_ROOT_URI() {
   log_info() { echo -e "${GREEN}[$(date '+%H:%M:%S')] ✓ $1${NC}"; }
   log_warn() { echo -e "${YELLOW}[$(date '+%H:%M:%S')] ⚠ $1${NC}"; }
   log_error() { echo -e "${RED}[$(date '+%H:%M:%S')] ✗ $1${NC}"; }
+
+  local -r PRIMARY_TEST_URL="https://code.kubectl.net"
+  local -r PRIMARY_ROOT_URI="https://dev.kubectl.net"
+  local -r GITLAB_ROOT_URI="https://gitlab.com/svcops/build-project/-/raw/main"
+
+  function CHECK_ROOT_URI() {
+    # 判断 ROOT_URI 是否已设置，并且是否是定义的 PRIMARY_ROOT_URI 或 GITLAB_ROOT_URI
+    if [[ -z "${ROOT_URI:-}" ]] || [[ "$ROOT_URI" != "$PRIMARY_ROOT_URI" && "$ROOT_URI" != "$GITLAB_ROOT_URI" ]]; then
+      log_info "ROOT_URI is not set or is not one of the predefined URIs, proceeding with network check..."
+    else
+      log_info "ROOT_URI is already set to a valid value: $ROOT_URI"
+      return 0
+    fi
+  }
+
+  CHECK_ROOT_URI
 
   # Detect environment - Fixed variable check
   if [[ "$OSTYPE" == "msys" ]] || [[ "${MSYSTEM:-}" != "" ]]; then
