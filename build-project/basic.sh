@@ -21,13 +21,17 @@ function EXPORT_ROOT_URI() {
     # 判断 ROOT_URI 是否已设置，并且是否是定义的 PRIMARY_ROOT_URI 或 GITLAB_ROOT_URI
     if [[ -z "${ROOT_URI:-}" ]] || [[ "$ROOT_URI" != "$PRIMARY_ROOT_URI" && "$ROOT_URI" != "$GITLAB_ROOT_URI" ]]; then
       log_info "ROOT_URI is not set or is not one of the predefined URIs, proceeding with network check..."
+      return 1
     else
-      log_info "ROOT_URI is already set to a valid value: $ROOT_URI"
+      export ROOT_URI=$ROOT_URI
       return 0
     fi
   }
 
-  CHECK_ROOT_URI
+  if CHECK_ROOT_URI; then
+    log_info "ROOT_URI is already set to a valid value: $ROOT_URI"
+    return 0
+  fi
 
   # Detect environment - Fixed variable check
   if [[ "$OSTYPE" == "msys" ]] || [[ "${MSYSTEM:-}" != "" ]]; then
