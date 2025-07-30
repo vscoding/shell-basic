@@ -31,8 +31,8 @@ function EXPORT_ROOT_URI() {
   local responses=()
   for ((attempt = 1; attempt <= MAX_RETRIES; attempt++)); do
     # Check connectivity using curl -sSL -I
-    local response
-    response=$(curl -m 3 -sSL -I "$PRIMARY_TEST_URL" | grep -oP 'HTTP/\d\.\d \K\d+')
+    local response="-1"
+    response=$(curl -m 3 -I -sSL -w "%{http_code}" -o /dev/null "$PRIMARY_TEST_URL" | tr -d '\r\n')
     if [ "$response" == "200" ]; then
       export ROOT_URI=$PRIMARY_ROOT_URI
       log_info "Primary address connected successfully, ROOT_URI=$ROOT_URI"
