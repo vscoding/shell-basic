@@ -19,10 +19,12 @@ function EXPORT_ROOT_URI() {
 
   # Detect environment - Fixed variable check
   if [[ "$OSTYPE" == "msys" ]] || [[ "${MSYSTEM:-}" != "" ]]; then
-    log_info "Detected Windows Git Bash Environment"
     export MSYS_NO_PATHCONV=1
+    local NULL_DEV="NUL"
+    log_info "Detected Windows Git Bash Environment, using NUL for null device"
   else
-    log_info "Detected Non-Windows Environment"
+    local NULL_DEV="/dev/null"
+    log_info "Detected Non-Windows Environment, using /dev/null for null device"
   fi
 
   log_info "Starting network connectivity check..."
@@ -31,7 +33,7 @@ function EXPORT_ROOT_URI() {
   local responses=()
   for ((attempt = 1; attempt <= MAX_RETRIES; attempt++)); do
     local response="-1"
-    response=$(curl -m 10 -sSL -w "%{http_code}" -o /dev/null "$PRIMARY_TEST_URL" | tr -d '\r\n')
+    response=$(curl -m 5 -sSL -I -w "%{http_code}" -o $NULL_DEV "$PRIMARY_TEST_URL" | tr -d '\r\n')
     if [ "$response" == "200" ]; then
       export ROOT_URI=$PRIMARY_ROOT_URI
       log_info "Primary address connected successfully, ROOT_URI=$ROOT_URI"
