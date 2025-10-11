@@ -13,7 +13,7 @@ function EXPORT_ROOT_URI() {
   log_warn() { echo -e "${YELLOW}[$(date '+%H:%M:%S')] ⚠ $1${NC}"; }
   log_error() { echo -e "${RED}[$(date '+%H:%M:%S')] ✗ $1${NC}"; }
 
-  local -r PRIMARY_TEST_URL="https://code.kubectl.net"
+  local -r PRIMARY_TEST_URL="https://code.kubectl.net/devops/build-project/raw/branch/main"
   local -r PRIMARY_ROOT_URI="https://dev.kubectl.net"
   local -r GITLAB_ROOT_URI="https://gitlab.com/svcops/build-project/-/raw/main"
 
