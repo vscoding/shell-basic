@@ -15,7 +15,7 @@ function EXPORT_ROOT_URI() {
 
   local -r PRIMARY_TEST_URL="https://code.kubectl.net"
   local -r PRIMARY_ROOT_URI="https://dev.kubectl.net"
-  local -r GITLAB_ROOT_URI="https://gitlab.com/svcops/build-project/-/raw/main"
+  local -r GITLAB_ROOT_URI="https://gitlab.com/vscoding/build-project/-/raw/main"
 
   function CHECK_ROOT_URI() {
     # 判断 ROOT_URI 是否已设置，并且是否是定义的 PRIMARY_ROOT_URI 或 GITLAB_ROOT_URI
