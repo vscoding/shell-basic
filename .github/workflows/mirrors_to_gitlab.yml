@@ -1,4 +1,4 @@
-name: Mirror repository to GitLab
+name: Mirror Repository to GitLab
 
 on:
   push:
@@ -6,46 +6,20 @@ on:
   workflow_dispatch:
 
 jobs:
-  mirror_to_gitlab:
-    name: Mirror repository to GitLab
+  mirror:
     runs-on: ubuntu-latest
+    name: Mirror Repository to GitLab
     if: ${{ always() }}
+
     env:
       GITLAB_SSH_PRIVATE_KEY: ${{ secrets.GITLAB_SSH_PRIVATE_KEY }}
-      GITLAB_SSH_REMOTE: ${{ vars.GITLAB_SSH_REMOTE }} # 例如 git@gitlab.com:group/repo.git
-      GITLAB_SSH_HOST: ${{ vars.GITLAB_SSH_HOST }}
-      GITLAB_SSH_PORT: ${{ vars.GITLAB_SSH_PORT }}
+      GITLAB_SSH_REMOTE: ${{ vars.GITLAB_SSH_REMOTE }}   # e.g. git@gitlab.com:group/repo.git
 
     steps:
-      - name: 🧾 Checkout (full history)
-        uses: actions/checkout@v4
+      - name: Mirror to GitLab
+        uses: vscoding/gitlab-mirror-action@v1
         with:
-          fetch-depth: 0
-
-      - name: 🚀 Push main to GitLab via SSH
-        shell: bash
-        run: |
-          set -Eeuo pipefail
-          if [[ -z "${GITLAB_SSH_PRIVATE_KEY:-}" || -z "${GITLAB_SSH_REMOTE:-}" ]]; then
-            echo "缺少 SSH 配置：请设置 GITLAB_SSH_PRIVATE_KEY 和 GITLAB_SSH_REMOTE"
-            exit 1
-          fi
-          # 强制校验：GITLAB_SSH_REMOTE 必须以 git@gitlab.com: 开头
-          if [[ ! "${GITLAB_SSH_REMOTE}" =~ ^git@gitlab\.com: ]]; then
-            echo "GITLAB_SSH_REMOTE 无效：必须以 'git@gitlab.com:' 开头，例如 'git@gitlab.com:group/repo.git'"
-            exit 1
-          fi
-
-          mkdir -p ~/.ssh && chmod 700 ~/.ssh
-          echo "$GITLAB_SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          host="${GITLAB_SSH_HOST:-gitlab.com}"
-          port="${GITLAB_SSH_PORT:-22}"
-          ssh-keyscan -p "$port" "$host" >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
-
-          git remote remove gitlab 2>/dev/null || true
-          git remote add gitlab "$GITLAB_SSH_REMOTE"
-
-          # 仅推送 main 分支
-          git push gitlab main:main
+          gitlab-ssh-private-key: ${{ secrets.GITLAB_SSH_PRIVATE_KEY }}
+          gitlab-ssh-remote: ${{ vars.GITLAB_SSH_REMOTE }}
+          source-branch: main
+          target-branch: main
